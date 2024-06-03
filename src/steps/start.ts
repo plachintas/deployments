@@ -30,7 +30,7 @@ async function createStart(
   let deploymentID = -1;
   if (!stepArgs.deploymentID) {
     log.info(`initializing new deployment for ${environment} @ ${ref}`);
-    const deployment = await github.rest.repos.createDeployment({
+    const params = {
       owner: owner,
       repo: repo,
       ref: ref,
@@ -41,7 +41,11 @@ async function createStart(
       auto_merge: false,
       transient_environment: true,
       payload: stepArgs.payload,
-    });
+    };
+    log.info(`creating deployment with params: ${JSON.stringify(params)}`);
+    const deployment = await github.rest.repos.createDeployment(params);
+    log.info(`deployment response: ${JSON.stringify(deployment)}`);
+
     if (deployment.status == 201) {
       deploymentID = deployment.data.id;
     } else {
